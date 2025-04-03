@@ -8,7 +8,7 @@ import { authenticateToken } from "./services/auth.js";
 import { typeDefs, resolvers } from "./schemas/index.js";
 import db from "./config/connection.js";
 
-// Fix __dirname in ESM
+// Fix __dirname in ESModules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -36,10 +36,12 @@ const startApolloServer = async () => {
 
   // Serve static files from frontend in production
   if (process.env.NODE_ENV === "production") {
-    app.use(express.static(path.join(__dirname, "../client/dist")));
+    // Fixed: correct path for Render deployment
+    const clientDistPath = path.resolve(__dirname, "../../client/dist");
+    app.use(express.static(clientDistPath));
 
     app.get("*", (_req: Request, res: Response) => {
-      res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+      res.sendFile(path.join(clientDistPath, "index.html"));
     });
   }
 
